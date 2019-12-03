@@ -10,12 +10,14 @@ COUNT = 0
 # endpoint to create new game
 @app.route("/game", methods=["POST"])
 def add_game():
+    global SUM
+    global COUNT
     player = request.json['player']
     level = request.json['level']
     score = request.json['score']
 
     s = f'Player {player} reached level {level} with {score} points'
-    with open('level.log', 'w') as f:
+    with open('level.log', 'a') as f:
         f.write(s + '\n')
 
     print(s)
@@ -28,8 +30,16 @@ def add_game():
 # return average
 @app.route("/avg", methods=['GET'])
 def avg():
-    print('Average:', SUM/COUNT)
-    return SUM/COUNT
+    global SUM
+    global COUNT
+    average = SUM/COUNT
+    SUM = 0
+    COUNT = 0
+    s = f'Average: {average}'
+    print(s)
+    with open('level.log', 'a') as f:
+        f.write(s + '\n')
+    return jsonify({'average': average})
 
 if __name__ == '__main__':
     app.run(debug=False, host='localhost', port=8080)
